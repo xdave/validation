@@ -53,5 +53,22 @@ func ExampleValidationFailure() {
 	// Output:
 	// validation_test.Person validation failed: `Name` Can not be empty (actual value: "")
 	// validation_test.Person validation failed: `Age` Minimum is 18 (actual value: 17)
+}
 
+func ExampleValidationFailure2() {
+	obj := Person{}
+	input := `{ "name": "Sam", "age": 18 }`
+	if err := json.Unmarshal([]byte(input), &obj); err != nil {
+		fmt.Println(err)
+		return
+	}
+	if errs := validation.Validate(obj); len(errs) > 0 {
+		for _, err := range errs {
+			fmt.Println(err)
+		}
+		return
+	}
+	fmt.Println(obj)
+	// Output:
+	// validation_test.Person.Employer validation failed: `Name` Can not be empty (actual value: "")
 }
