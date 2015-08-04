@@ -22,8 +22,15 @@ func Validate(obj interface{}, parentType ...string) (errs []error) {
 		return
 	}
 
+	// Figure out if this object is a pointer
+	// If so, derefernce it
+	v := reflect.ValueOf(obj)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+
 	// The actual type name of this object
-	Type := reflect.TypeOf(obj).String()
+	Type := v.Type().String()
 
 	// If validation above failed
 	if !valid {
@@ -41,13 +48,6 @@ func Validate(obj interface{}, parentType ...string) (errs []error) {
 			errs = append(errs,
 				fmt.Errorf(errFmt, Type, e.Field, e.Message, e.Value))
 		}
-	}
-
-	// Figure out if this object is a pointer
-	// If so, derefernce it
-	v := reflect.ValueOf(obj)
-	if v.Kind() == reflect.Ptr {
-		v = v.Elem()
 	}
 
 	// Find sub-structs and validate them, too
