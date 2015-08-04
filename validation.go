@@ -41,10 +41,7 @@ func Validate(obj interface{}, parentType ...string) (errs []error) {
 			errs = append(errs,
 				fmt.Errorf(errFmt, Type, e.Field, e.Message, e.Value))
 		}
-		return
 	}
-
-	// We get here if there were no errors
 
 	// Figure out if this object is a pointer
 	// If so, derefernce it
@@ -57,14 +54,14 @@ func Validate(obj interface{}, parentType ...string) (errs []error) {
 	for i := range make([]struct{}, v.NumField()) {
 		field := v.Field(i)
 		if field.Kind() == reflect.Struct {
-			return Validate(field.Interface(), Type)
+			errs = append(errs, Validate(field.Interface(), Type)...)
 		} else if field.Kind() == reflect.Slice {
 			if field.Len() > 0 {
 				firstItem := field.Index(0)
 				if firstItem.Kind() == reflect.Struct {
 					for j := range make([]struct{}, field.Len()) {
 						item := field.Index(j).Interface()
-						return Validate(item, Type)
+						errs = append(errs, Validate(item, Type)...)
 					}
 				}
 			}
