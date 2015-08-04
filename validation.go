@@ -58,6 +58,16 @@ func Validate(obj interface{}, parentType ...string) (errs []error) {
 		field := v.Field(i)
 		if field.Kind() == reflect.Struct {
 			return Validate(field.Interface(), Type)
+		} else if field.Kind() == reflect.Slice {
+			if field.Len() > 0 {
+				firstItem := field.Index(0)
+				if firstItem.Kind() == reflect.Struct {
+					for j := range make([]struct{}, field.Len()) {
+						item := field.Index(j).Interface()
+						return Validate(item, Type)
+					}
+				}
+			}
 		}
 	}
 	return
