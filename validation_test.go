@@ -53,6 +53,7 @@ func ExampleValidationFailure() {
 	// Output:
 	// validation_test.Person validation failed: `Name` Can not be empty (actual value: "")
 	// validation_test.Person validation failed: `Age` Minimum is 18 (actual value: 17)
+	// validation_test.Person.Employer validation failed: `Name` Can not be empty (actual value: "")
 }
 
 func ExampleValidationFailure2() {
