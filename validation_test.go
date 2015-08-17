@@ -3,6 +3,7 @@ package validation_test
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
 )
 
 import (
@@ -72,4 +73,50 @@ func ExampleValidationFailure2() {
 	fmt.Println(obj)
 	// Output:
 	// validation_test.Person.Employer validation failed: `Name` Can not be empty (actual value: "")
+}
+
+func TestInvalidObjectPassed(t *testing.T) {
+	invalid := "a string"
+	if errs := validation.Validate(invalid); len(errs) == 0 {
+		t.Error("Length of errors is not greater than 0")
+	}
+}
+
+func TestPointerPassed(t *testing.T) {
+	obj := Person{
+		Name: "Sam",
+		Age:  18,
+		Employer: Employer{
+			Name: "Widgets, Inc.",
+		},
+	}
+	errs := validation.Validate(&obj)
+	if len(errs) > 0 {
+		for _, err := range errs {
+			t.Log(err)
+		}
+		t.Error("Expected validation of a pointer")
+	}
+}
+
+func TestObjectWithSlicePassed(t *testing.T) {
+	person := Person{
+		Name: "bob",
+		Age:  33,
+		Employer: Employer{
+			Name: "widgets",
+		},
+	}
+	withslice := struct {
+		People []Person
+	}{
+		People: []Person{person},
+	}
+	errs := validation.Validate(&withslice)
+	if len(errs) > 0 {
+		for _, err := range errs {
+			t.Log(err)
+		}
+		t.Error("Expected validation of struct with slice of structs")
+	}
 }
